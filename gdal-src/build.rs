@@ -310,8 +310,14 @@ fn main() {
     if cfg!(feature = "zstd") {
         let zstd_root =
             PathBuf::from(std::env::var("DEP_ZSTD_ROOT").expect("set by zstd-sys"));
-        let zstd_include = zstd_root.join("include");
-        let zstd_lib = find_library("zstd", &zstd_root);
+        let zstd_include =
+            PathBuf::from(std::env::var("DEP_ZSTD_INCLUDE").expect("set by zstd-sys"));
+        // zstd-sys may place libzstd.a directly in root, or in lib/ subdirectory
+        let zstd_lib = if zstd_root.join(format!("libzstd.a")).exists() {
+            zstd_root.join("libzstd.a")
+        } else {
+            find_library("zstd", &zstd_root)
+        };
         config
             .define("GDAL_USE_ZSTD", "ON")
             .define("ZSTD_INCLUDE_DIR", print_path(&zstd_include))
