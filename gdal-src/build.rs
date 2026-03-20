@@ -381,6 +381,20 @@ fn main() {
     } else {
         println!("cargo:rustc-link-lib=static=gdal");
     }
+
+    // Re-emit zstd link directive AFTER gdal so the linker resolves ZSTD_*
+    // symbols that libgdal.a references. Without this, the linker processes
+    // libzstd.a (from zstd-sys) before libgdal.a and discards the zstd
+    // symbols since nothing needs them yet.
+    if cfg!(feature = "zstd") {
+        let zstd_root =
+            PathBuf::from(std::env::var("DEP_ZSTD_ROOT").expect("set by zstd-sys"));
+        println!(
+            "cargo:rustc-link-search=native={}",
+            zstd_root.to_str().unwrap()
+        );
+        println!("cargo:rustc-link-lib=static=zstd");
+    }
 }
 
 // cmake sometimes does not like windows paths like `c:\\whatever\folder`
