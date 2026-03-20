@@ -52,7 +52,7 @@ link-cplusplus = "1.0"
 proj-sys = { version = "0.27.0", features = ["bundled_proj"] }
 libsqlite3-sys = { version = ">=0.28.0,<0.37", features = [
     "bundled",
-], optional = true }
+] }
 hdf5-sys = { package = "hdf5-metno-sys", version = "0.10.1", optional = true, features = [
     "static",
     "hl",
@@ -317,7 +317,7 @@ driver_mem = []
 # external
 
 # sqlite
-driver_sqlite = ["dep:libsqlite3-sys"]
+driver_sqlite = []
 driver_gpkg = ["driver_sqlite"]
 driver_vfk = ["driver_sqlite"]
 driver_rasterlite = []                 # unclear how to handle that
