@@ -307,6 +307,19 @@ fn main() {
     }
     handle_gdal_driver!(config, "driver_postgis_raster");
 
+    if cfg!(feature = "zstd") {
+        let zstd_root =
+            PathBuf::from(std::env::var("DEP_ZSTD_ROOT").expect("set by zstd-sys"));
+        let zstd_include = zstd_root.join("include");
+        let zstd_lib = find_library("zstd", &zstd_root);
+        config
+            .define("GDAL_USE_ZSTD", "ON")
+            .define("ZSTD_INCLUDE_DIR", print_path(&zstd_include))
+            .define("ZSTD_LIBRARY", print_path(&zstd_lib));
+    } else {
+        config.define("GDAL_USE_ZSTD", "OFF");
+    }
+
     if cfg!(feature = "geos") {
         config.define("GDAL_USE_GEOS", "ON");
     } else {
